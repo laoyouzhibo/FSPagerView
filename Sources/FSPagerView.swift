@@ -104,6 +104,10 @@ open class FSPagerView: UIView,UICollectionViewDataSource,UICollectionViewDelega
         }
     }
     
+    /// The scroll animation Duration for automatic sliding. 0 means use system default.
+    @IBInspectable
+    open var automaticSlidingScrollAnimateDuration: CGFloat = 0.0
+    
     /// The spacing to use between items in the pager view. Default is 0.
     @IBInspectable
     open var interitemSpacing: CGFloat = 0 {
@@ -590,7 +594,13 @@ open class FSPagerView: UIView,UICollectionViewDataSource,UICollectionViewDelega
             let item = (indexPath.item+1) % self.numberOfItems
             return self.collectionViewLayout.contentOffset(for: IndexPath(item: item, section: section))
         }()
-        self.collectionView.setContentOffset(contentOffset, animated: true)
+        if self.automaticSlidingScrollAnimateDuration == 0 {
+            self.collectionView.setContentOffset(contentOffset, animated: true)
+        } else {
+            UIView.animate(withDuration: self.automaticSlidingScrollAnimateDuration) {
+                self.collectionView.setContentOffset(contentOffset, animated: false)
+            }
+        }
     }
     
     fileprivate func cancelTimer() {
